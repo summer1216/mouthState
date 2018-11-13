@@ -39,7 +39,7 @@ public:
 
 
     void detectCandidates(MouthStateDetector &detector, const cv::Rect &mouthBbox,
-                          const MouthState state, const cv::Mat &roiImg);
+                          const MouthState state, const cv::Mat &img,const cv::Rect& roi);
 
 
     void selectNearestCand(const cv::Rect& mouthBbox, MouthCandidate &selected_cand);

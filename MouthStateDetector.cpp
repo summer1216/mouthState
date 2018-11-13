@@ -17,13 +17,6 @@ void MouthStateDetector::detectMouths(const cv::Mat& greyImg,cv::Size minSize, c
     std::cout<<"------------------------------"<<std::endl;
     std::cout<<"size of mouths "<<mouthRects.size()<<std::endl;
 
-//    for(int i=0;i<mouthRects.size();i++)
-//    {
-//        std::cout<<"rect"<<mouthRects[i]<<std::endl;
-//        std::cout<<"levels"<<reject_levels[i]<<std::endl;
-//        std::cout<<"weights"<<level_weights[i]<<std::endl;
-
-//    }
 }
 
 std::vector<cv::Rect> MouthStateDetector::getMouthRects()

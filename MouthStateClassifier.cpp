@@ -30,20 +30,21 @@ void MouthStateClassifier::classifyMouths(const cv::Mat &greyImg,
     cv::Rect roi = cv::Rect(roi_x,roi_y,roi_width,roi_height);
     std::cout<<"roi box "<<roi<<std::endl;
 
-    cv::Mat roiImg = greyImg(roi);
+//    cv::Mat roiImg = greyImg(roi);
 
 
-    detectCandidates(closeDetector,mouthBbox,MouthState::CLOSE,roiImg);
-    detectCandidates(randomDetector,mouthBbox,MouthState::RANDOM,roiImg);
-    detectCandidates(openDetector,mouthBbox,MouthState::OPEN,roiImg);
+    detectCandidates(closeDetector,mouthBbox,MouthState::CLOSE,greyImg,roi);
+    detectCandidates(randomDetector,mouthBbox,MouthState::RANDOM,greyImg,roi);
+    detectCandidates(openDetector,mouthBbox,MouthState::OPEN,greyImg,roi);
 
     if(mouthCandidates.size()!=0)
     {
         selectNearestCand(mouthBbox,selectedMouth);
         currentMouthState = selectedMouth.state;
-        newMouthBox = cv::Rect(selectedMouth.boundingBox.x+mouthBbox.x-0.5*mouthBbox.width,
-                               selectedMouth.boundingBox.y+mouthBbox.y-0.5*mouthBbox.height,
-                               selectedMouth.boundingBox.width,selectedMouth.boundingBox.height);
+//        newMouthBox = cv::Rect(selectedMouth.boundingBox.x+mouthBbox.x-0.5*mouthBbox.width,
+//                               selectedMouth.boundingBox.y+mouthBbox.y-0.5*mouthBbox.height,
+//                               selectedMouth.boundingBox.width,selectedMouth.boundingBox.height);
+        newMouthBox = selectedMouth.boundingBox;
     }
 
     switch (currentMouthState) {
@@ -69,9 +70,12 @@ MouthState MouthStateClassifier::getCurrentState()
 }
 
 
-void MouthStateClassifier::detectCandidates( MouthStateDetector &detector,const cv::Rect &mouthBbox,
-                                             const MouthState state, const cv::Mat &roiImg)
+void MouthStateClassifier::detectCandidates(MouthStateDetector &detector, const cv::Rect &mouthBbox,
+                                             const MouthState state, const cv::Mat &img, const cv::Rect &roi)
 {
+
+    cv::Mat roiImg = img(roi);
+
     cv::Size minSize(mouthBbox.width*0.7,mouthBbox.height*0.7);
     cv::Size maxSize(mouthBbox.width*1.3,mouthBbox.height*1.3);
     MouthCandidate candidate;
@@ -82,6 +86,8 @@ void MouthStateClassifier::detectCandidates( MouthStateDetector &detector,const 
 
     for(auto rect:detectedRects)
     {
+        rect.x = rect.x+roi.x;
+        rect.y = rect.y+roi.y;
         candidate.boundingBox = rect;
         candidate.state = state;
         mouthCandidates.push_back(candidate);
@@ -107,7 +113,26 @@ void MouthStateClassifier::selectNearestCand(const cv::Rect &mouthBbox,MouthCand
 
         float dRatio = fabs(ratioDetected-ratioMouth);
 
-        if(dRatio<minRatio)
+        float delta = dRatio-minRatio;
+
+        if(fabs(delta)<0.1)
+        {
+            int dSelectedStartPt = abs(mouthBbox.x-selected_cand.boundingBox.x)
+                    +abs(mouthBbox.y-selected_cand.boundingBox.y);
+            int dCandStartPt = abs(mouthBbox.x-cand.boundingBox.x)+abs(mouthBbox.y-cand.boundingBox.y);
+
+            std::cout<<"delta "<<delta<<"  dSele "<<dSelectedStartPt<<"   dCand  "<<dCandStartPt<<std::endl;
+            if(dSelectedStartPt>dCandStartPt)
+            {
+                minRatio = dRatio;
+                selected_cand = cand;
+            }
+
+
+        }
+
+
+        else if(delta<0)
         {
             minRatio = dRatio;
             selected_cand = cand;

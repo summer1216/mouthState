@@ -85,19 +85,19 @@ int main(int argc, char** argv)
 
             if(currentState == MouthState::OPEN)
             {
-                cv::rectangle(frame,newMouthBox,cv::Scalar(255,0,0),2,8,0); //open blue
+                cv::rectangle(frame,newMouthBox,cv::Scalar(0,255,0),2,8,0);
                 cv::putText(frame, std::string("open"),cv::Point(240,80),
-                            cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255,0,0));
+                            cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0,255,0));
             }
             else if(currentState == MouthState::CLOSE)
             {
-                cv::rectangle(frame,newMouthBox,cv::Scalar(255,0,0),2,8,0); //open blue
+                cv::rectangle(frame,newMouthBox,cv::Scalar(0,0,255),2,8,0);
                 cv::putText(frame, std::string("closed"),cv::Point(240,80),
-                            cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0,255,0));
+                            cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0,0,255));
             }
             else if(currentState == MouthState::RANDOM)
             {
-                cv::rectangle(frame,newMouthBox,cv::Scalar(255,0,0),2,8,0); //open blue
+                cv::rectangle(frame,newMouthBox,cv::Scalar(0,0,255),2,8,0);
                 cv::putText(frame, std::string("random"),cv::Point(240,80),
                             cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0,0,255));
             }
